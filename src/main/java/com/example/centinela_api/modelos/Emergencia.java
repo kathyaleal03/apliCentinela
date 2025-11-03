@@ -26,7 +26,4 @@ public class Emergencia {
     private Double longitud;
 
     private Boolean atendido = false;
-
-    @Column(name = "fecha_envio", insertable = false, updatable = false)
-    private LocalDateTime fechaEnvio;
 }

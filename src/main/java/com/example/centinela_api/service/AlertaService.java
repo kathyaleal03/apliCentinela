@@ -38,7 +38,7 @@ public class AlertaService {
             alerta.setTitulo(alertaDetails.getTitulo());
             alerta.setDescripcion(alertaDetails.getDescripcion());
             alerta.setNivel(alertaDetails.getNivel());
-            alerta.setFuente(alertaDetails.getFuente());
+            alerta.setUsuario(alertaDetails.getUsuario());
             return data.save(alerta);
         } else {
             return null;

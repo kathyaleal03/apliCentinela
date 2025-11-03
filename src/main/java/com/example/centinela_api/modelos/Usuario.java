@@ -27,8 +27,7 @@ public class Usuario {
     @Convert(converter = RegionAttributeConverter.class)
     private Region region;
 
-    @Column(name = "fecha_registro", insertable = false, updatable = false)
-    private LocalDateTime fechaRegistro;
+    // Nota: la fecha de registro ya no forma parte del modelo según la nueva estructura
 
     // Enum que corresponde a la columna ENUM('Santa Ana Norte', ...)
     public enum Region {

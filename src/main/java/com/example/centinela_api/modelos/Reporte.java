@@ -2,6 +2,7 @@ package com.example.centinela_api.modelos;
 import lombok.Data;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import jakarta.persistence.FetchType;
 
 @Entity
 @Data
@@ -23,17 +24,19 @@ public class Reporte {
 
     private String descripcion;
 
+
     private Double latitud;
     private Double longitud;
 
-    @Column(name = "foto_url")
-    private String fotoUrl;
+    // Relación con la entidad de fotos de reportes (foto_id)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "foto_id")
+    private FotoReporte foto;
 
     @Enumerated(EnumType.STRING)
     private EstadoReporte estado = EstadoReporte.Activo;
 
-    @Column(name = "fecha_reporte", insertable = false, updatable = false)
-    private LocalDateTime fechaReporte;
+    // fecha_reporte ya no forma parte del modelo según la nueva estructura
 
     // Enum para el campo 'tipo'
     public enum TipoReporte {

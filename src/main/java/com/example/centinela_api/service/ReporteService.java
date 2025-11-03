@@ -37,7 +37,7 @@ public class ReporteService {
             reporte.setDescripcion(reporteDetails.getDescripcion());
             reporte.setLatitud(reporteDetails.getLatitud());
             reporte.setLongitud(reporteDetails.getLongitud());
-            reporte.setFotoUrl(reporteDetails.getFotoUrl());
+            reporte.setFoto(reporteDetails.getFoto());
             reporte.setTipo(reporteDetails.getTipo());
             reporte.setEstado(reporteDetails.getEstado());
             reporte.setUsuario(reporteDetails.getUsuario());

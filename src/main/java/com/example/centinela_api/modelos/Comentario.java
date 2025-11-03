@@ -24,7 +24,4 @@ public class Comentario {
     private Usuario usuario;
 
     private String mensaje;
-
-    @Column(name = "fecha_comentario", insertable = false, updatable = false)
-    private LocalDateTime fechaComentario;
 }

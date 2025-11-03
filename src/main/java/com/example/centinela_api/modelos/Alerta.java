@@ -1,7 +1,7 @@
 package com.example.centinela_api.modelos;
 import lombok.Data;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+ 
 
 @Entity
 @Data
@@ -24,10 +24,10 @@ public class Alerta {
     @Enumerated(EnumType.STRING)
     private NivelAlerta nivel = NivelAlerta.Verde;
 
-    private String fuente;
-
-    @Column(name = "fecha_alerta", insertable = false, updatable = false)
-    private LocalDateTime fechaAlerta;
+    // Relación con Usuario (id_usuario)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
     // Enum para el campo 'nivel'
     public enum NivelAlerta {
