@@ -1,6 +1,7 @@
 package com.example.centinela_api.controller;
 
 import com.example.centinela_api.modelos.Reporte;
+import com.example.centinela_api.modelos.CreateReporteRequest;
 import com.example.centinela_api.service.ReporteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,9 +30,9 @@ public class ReporteController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createReporte(@RequestBody Reporte reporte) {
+    public ResponseEntity<?> createReporte(@RequestBody CreateReporteRequest req) {
         try {
-            Reporte nuevo = reporteService.save(reporte);
+            Reporte nuevo = reporteService.createFromDto(req);
             return new ResponseEntity<>(nuevo, HttpStatus.CREATED);
         } catch (IllegalArgumentException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);

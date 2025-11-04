@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 
 @Entity
 @Data
-@Table(name = "FotosReportes")
+// Use lowercase table name matching the existing DB foreign key constraint
+@Table(name = "fotosreportes")
 public class FotoReporte {
 
     @Id
