@@ -21,6 +21,7 @@ public class EmergenciaController {
         return new ResponseEntity<>(emergenciaService.findAll(), HttpStatus.OK);
     }
 
+    //Comment
     @GetMapping("/{id}")
     public ResponseEntity<Emergencia> getEmergenciaById(@PathVariable Integer id) {
         return emergenciaService.findById(id)
