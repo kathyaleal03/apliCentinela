@@ -13,6 +13,7 @@ import java.util.Optional;
 import com.example.centinela_api.modelos.LoginRequest;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RequestMapping("/api/usuarios") // URL base: http://localhost:8080/api/usuarios
 public class UsuarioController {
 
@@ -48,16 +49,15 @@ public class UsuarioController {
     // 3. REGISTRAR NUEVO USUARIO (CREATE)
     // ==========================================================
     // POST http://localhost:8080/api/usuarios
-    @PostMapping
+    @PostMapping("/createUser")
     public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
-        // Antes de guardar, se recomienda validar y verificar si el correo ya existe.
+
         if (usuarioService.findByCorreo(usuario.getCorreo()).isPresent()) {
-            // Devuelve 409 CONFLICT si el correo ya está registrado
+
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
         Usuario nuevoUsuario = usuarioService.save(usuario);
-        // Devuelve 201 CREATED y el objeto creado
         return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
     }
 
