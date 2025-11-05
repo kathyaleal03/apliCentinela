@@ -1,4 +1,6 @@
 package com.example.centinela_api.modelos;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -6,6 +8,7 @@ import jakarta.persistence.FetchType;
 
 @Entity
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "Reportes")
 public class Reporte {
 

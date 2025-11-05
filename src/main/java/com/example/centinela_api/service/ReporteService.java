@@ -29,8 +29,23 @@ public class ReporteService {
     @Autowired
     private FotoReporteService fotoReporteService;
 
+    @Transactional(readOnly = true)
     public List<Reporte> findAll() {
-        return data.findAll();
+        // Load within a transaction to initialize lazy relations before serialization
+        List<Reporte> list = data.findAll();
+        // touch lazy properties to avoid LazyInitializationException when Jackson serializes later
+        for (Reporte r : list) {
+            if (r.getUsuario() != null) {
+                // access id and a simple property to force initialization
+                r.getUsuario().getUsuarioId();
+                r.getUsuario().getNombre();
+            }
+            if (r.getFoto() != null) {
+                r.getFoto().getFotoId();
+                r.getFoto().getUrlFoto();
+            }
+        }
+        return list;
     }
 
     public Optional<Reporte> findById(Integer id) {

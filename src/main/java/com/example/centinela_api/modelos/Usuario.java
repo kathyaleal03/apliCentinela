@@ -1,10 +1,13 @@
 package com.example.centinela_api.modelos;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "Usuarios")
 public class Usuario {
 
