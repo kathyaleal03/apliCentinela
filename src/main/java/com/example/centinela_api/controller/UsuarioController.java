@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import com.example.centinela_api.modelos.LoginRequest;
 
@@ -110,5 +111,52 @@ public class UsuarioController {
         usuarioService.deleteById(id);
         // Devuelve 204 NO CONTENT, indicando que la operación fue exitosa pero no hay cuerpo de respuesta
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    // ==========================================================
+    // 7. ACTUALIZAR ROL DE USUARIO (ADMIN/USUARIO)
+    // ==========================================================
+    @PutMapping("/{id}/rol")
+    public ResponseEntity<Map<String, String>> actualizarRol(
+            @PathVariable Integer id,
+            @RequestBody Map<String, String> request) {
+
+        System.out.println("=== ACTUALIZANDO ROL ===");
+        System.out.println("ID recibido: " + id);
+        System.out.println("Request body: " + request);
+
+        String nuevoRol = request.get("rol");
+        System.out.println("Nuevo rol: " + nuevoRol);
+
+        // Validar que el rol sea válido ('admin' o 'usuario')
+        if (nuevoRol == null || (!nuevoRol.equalsIgnoreCase("admin") && !nuevoRol.equalsIgnoreCase("usuario"))) {
+            System.out.println("ERROR: Rol inválido");
+            return ResponseEntity.badRequest()
+                    .body(Map.of("mensaje", "Rol inválido. Debe ser 'admin' o 'usuario'"));
+        }
+
+        // Verificar si el usuario existe
+        Optional<Usuario> usuarioOpt = usuarioService.findById(id);
+        if (usuarioOpt.isEmpty()) {
+            System.out.println("ERROR: Usuario no encontrado con ID: " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("mensaje", "Usuario no encontrado"));
+        }
+
+        // Actualizar el rol usando el enum
+        Usuario usuario = usuarioOpt.get();
+        System.out.println("Usuario encontrado: " + usuario.getNombre());
+        System.out.println("Rol anterior: " + usuario.getRol());
+
+        usuario.setRol(nuevoRol.equalsIgnoreCase("admin") ? Usuario.Rol.admin : Usuario.Rol.usuario);
+        usuarioService.save(usuario);
+
+        System.out.println("Rol actualizado a: " + usuario.getRol());
+        System.out.println("=== ROL ACTUALIZADO EXITOSAMENTE ===");
+
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "Rol actualizado correctamente",
+                "usuarioId", String.valueOf(usuario.getUsuarioId()),
+                "nuevoRol", usuario.getRol().name()
+        ));
     }
 }
