@@ -31,9 +31,19 @@ public class Usuario {
     private Region region;
 
     // Nota: la fecha de registro ya no forma parte del modelo según la nueva estructura
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "ENUM('admin', 'usuario') DEFAULT 'usuario'")
+    private Rol rol = Rol.usuario; // valor por defecto en el modelo también
+
 
     // Enum que corresponde a la columna ENUM('Santa Ana Norte', ...)
     public enum Region {
         Santa_Ana_Norte, Santa_Ana_Sur, Santa_Ana_Este, Santa_Ana_Oeste
     }
+
+    public enum Rol {
+        admin, usuario
+    }
+
+
 }
