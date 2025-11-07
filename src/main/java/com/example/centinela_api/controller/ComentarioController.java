@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional; // Necesario para el update
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:5173", "https://centinela-frontend.vercel.app"}, allowCredentials = "true")
 @RequestMapping("/api/comentarios")
 public class ComentarioController {
 

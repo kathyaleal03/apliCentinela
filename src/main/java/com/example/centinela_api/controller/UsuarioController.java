@@ -14,7 +14,7 @@ import java.util.Optional;
 import com.example.centinela_api.modelos.LoginRequest;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:5173", "https://centinela-frontend.vercel.app"}, allowCredentials = "true")
 @RequestMapping("/api/usuarios") // URL base: http://localhost:8080/api/usuarios
 public class UsuarioController {
 
