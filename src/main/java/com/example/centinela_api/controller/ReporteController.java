@@ -19,6 +19,28 @@ public class ReporteController {
     @Autowired
     private ReporteService reporteService;
 
+    // Estadísticas endpoints
+    @GetMapping("/estadisticas/tipos")
+    public ResponseEntity<java.util.List<com.example.centinela_api.modelos.EstadisticaTipoDTO>> getEstadisticasTipos() {
+        return new ResponseEntity<>(reporteService.getCountsByTipo(), HttpStatus.OK);
+    }
+
+    @GetMapping("/estadisticas/estados")
+    public ResponseEntity<java.util.List<com.example.centinela_api.modelos.EstadisticaEstadoDTO>> getEstadisticasEstados() {
+        return new ResponseEntity<>(reporteService.getCountsByEstado(), HttpStatus.OK);
+    }
+
+    @GetMapping("/estadisticas/regiones")
+    public ResponseEntity<java.util.List<com.example.centinela_api.modelos.RegionCountDTO>> getEstadisticasRegiones() {
+        return new ResponseEntity<>(reporteService.getCountsByRegion(), HttpStatus.OK);
+    }
+
+    @GetMapping("/estadisticas/heatmap")
+    public ResponseEntity<java.util.List<com.example.centinela_api.modelos.HeatmapPointDTO>> getHeatmap(@RequestParam(name = "precision", required = false, defaultValue = "3") int precision) {
+        if (precision < 0 || precision > 6) precision = 3;
+        return new ResponseEntity<>(reporteService.getHeatmapPoints(precision), HttpStatus.OK);
+    }
+
     @GetMapping
     public ResponseEntity<List<ReporteDTO>> getAllReportes() {
         var list = reporteService.findAll();

@@ -28,6 +28,121 @@ public class ReporteService {
 
     @Autowired
     private FotoReporteService fotoReporteService;
+    
+    @Autowired
+    private com.example.centinela_api.interfaces.IRegion iRegion;
+
+    // Estadísticas: counts por tipo
+    public java.util.List<com.example.centinela_api.modelos.EstadisticaTipoDTO> getCountsByTipo() {
+        java.util.List<Object[]> rows = data.countByTipoGroup();
+        java.util.List<com.example.centinela_api.modelos.EstadisticaTipoDTO> out = new java.util.ArrayList<>();
+        if (rows != null) {
+            for (Object[] r : rows) {
+                com.example.centinela_api.modelos.EstadisticaTipoDTO dto = new com.example.centinela_api.modelos.EstadisticaTipoDTO();
+                if (r[0] != null) dto.setTipo(r[0].toString()); else dto.setTipo("UNKNOWN");
+                dto.setCantidad(r[1] instanceof Number ? ((Number) r[1]).longValue() : 0L);
+                out.add(dto);
+            }
+        }
+        return out;
+    }
+
+    // Estadísticas: counts por estado
+    public java.util.List<com.example.centinela_api.modelos.EstadisticaEstadoDTO> getCountsByEstado() {
+        java.util.List<Object[]> rows = data.countByEstadoGroup();
+        java.util.List<com.example.centinela_api.modelos.EstadisticaEstadoDTO> out = new java.util.ArrayList<>();
+        if (rows != null) {
+            for (Object[] r : rows) {
+                com.example.centinela_api.modelos.EstadisticaEstadoDTO dto = new com.example.centinela_api.modelos.EstadisticaEstadoDTO();
+                if (r[0] != null) dto.setEstado(r[0].toString()); else dto.setEstado("UNKNOWN");
+                dto.setCantidad(r[1] instanceof Number ? ((Number) r[1]).longValue() : 0L);
+                out.add(dto);
+            }
+        }
+        return out;
+    }
+
+    // Estadísticas: reportes por región (asignando cada reporte a la región más cercana por centroide)
+    public java.util.List<com.example.centinela_api.modelos.RegionCountDTO> getCountsByRegion() {
+        java.util.List<com.example.centinela_api.modelos.RegionCountDTO> out = new java.util.ArrayList<>();
+        java.util.List<com.example.centinela_api.modelos.Region> regiones = iRegion.findAll();
+        java.util.Map<Integer, Long> counts = new java.util.HashMap<>();
+
+        java.util.List<Reporte> reportes = data.findAll();
+        for (Reporte r : reportes) {
+            if (r.getLatitud() == null || r.getLongitud() == null) continue;
+            double lat = r.getLatitud();
+            double lon = r.getLongitud();
+            // find nearest region by distance to region lat/lon
+            com.example.centinela_api.modelos.Region best = null;
+            double bestDist = Double.MAX_VALUE;
+            for (com.example.centinela_api.modelos.Region reg : regiones) {
+                if (reg.getLatitud() == null || reg.getLongitud() == null) continue;
+                double d = haversine(lat, lon, reg.getLatitud(), reg.getLongitud());
+                if (d < bestDist) {
+                    bestDist = d;
+                    best = reg;
+                }
+            }
+            if (best != null) {
+                counts.put(best.getRegionId(), counts.getOrDefault(best.getRegionId(), 0L) + 1L);
+            }
+        }
+
+        // map to DTOs, include zeros if desired
+        for (com.example.centinela_api.modelos.Region reg : regiones) {
+            com.example.centinela_api.modelos.RegionCountDTO dto = new com.example.centinela_api.modelos.RegionCountDTO();
+            dto.setRegionId(reg.getRegionId());
+            dto.setRegionNombre(reg.getNombre());
+            dto.setCantidad(counts.getOrDefault(reg.getRegionId(), 0L));
+            out.add(dto);
+        }
+        return out;
+    }
+
+    // Estadísticas: heatmap grouping by rounding lat/lon to given precision (decimals)
+    public java.util.List<com.example.centinela_api.modelos.HeatmapPointDTO> getHeatmapPoints(int precision) {
+        java.util.List<Reporte> reportes = data.findAll();
+        java.util.Map<String, Long> map = new java.util.HashMap<>();
+        for (Reporte r : reportes) {
+            if (r.getLatitud() == null || r.getLongitud() == null) continue;
+            double lat = r.getLatitud();
+            double lon = r.getLongitud();
+            double rlat = round(lat, precision);
+            double rlon = round(lon, precision);
+            String key = rlat + ":" + rlon;
+            map.put(key, map.getOrDefault(key, 0L) + 1L);
+        }
+        java.util.List<com.example.centinela_api.modelos.HeatmapPointDTO> out = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<String, Long> e : map.entrySet()) {
+            String[] parts = e.getKey().split(":");
+            com.example.centinela_api.modelos.HeatmapPointDTO dto = new com.example.centinela_api.modelos.HeatmapPointDTO();
+            dto.setLatitud(Double.parseDouble(parts[0]));
+            dto.setLongitud(Double.parseDouble(parts[1]));
+            dto.setCantidad(e.getValue());
+            out.add(dto);
+        }
+        return out;
+    }
+
+    // helper: round to decimals
+    private static double round(double value, int decimals) {
+        if (decimals < 0) return value;
+        double factor = Math.pow(10, decimals);
+        return Math.round(value * factor) / factor;
+    }
+
+    // helper: haversine distance in kilometers
+    private static double haversine(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
 
     @Transactional(readOnly = true)
     public List<Reporte> findAll() {
